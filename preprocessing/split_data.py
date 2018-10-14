@@ -41,6 +41,11 @@ def split_data(experiment):
     X_train = X_train.reshape((N_train, 1))
     X_test = X_test.reshape((N_test, 1))
 
+    # whole X for plotting train and test predictions
+    N = len(raw_data)
+    X = np.array(range(0, N))/N
+    X = X.reshape((N, 1))
+
     experiment['split_point'] = split_point
     experiment['scale'] = scale
     experiment['N_train'] = N_train
@@ -49,5 +54,7 @@ def split_data(experiment):
     experiment['N_test'] = N_test
     experiment['X_test'] = X_test
     experiment['y_test'] = y_test
+    experiment['X'] = X
+    experiment['N'] = N
 
     return experiment
