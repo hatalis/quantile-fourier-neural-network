@@ -16,11 +16,11 @@ def set_coverage(experiment):
 
     N_PI = experiment['N_PI']
 
-    if N_PI == None: # test only median
+    if N_PI == 0: # test only median
         tau, N_tau = 0.5, 1
     else:
         step = 1 / (2 * N_PI + 1)
-        tau = np.array(np.arange(step, 1.0, step))
+        tau = np.array(np.arange(step, 1.0-step, step))
         N_tau = len(tau)
 
     # can also also custom define taus here

@@ -36,15 +36,15 @@ def split_data(experiment):
     # create X time features
     N_test = len(y_test)
     N_train = len(y_train)
+    N = N_train + N_test
     X_train = np.array(range(0, N_train))/N_train
-    X_test = np.array(range(N_train,N_train+N_test))/N_test
     X_train = X_train.reshape((N_train, 1))
+    X_test = np.array(range(N_train,N_train+N_test))/N_train
     X_test = X_test.reshape((N_test, 1))
 
     # whole X for plotting train and test predictions
-    N = len(raw_data)
-    X = np.array(range(0, N))/N
-    X = X.reshape((N, 1))
+    X = np.concatenate((X_train, X_test), axis=0)
+
 
     experiment['split_point'] = split_point
     experiment['scale'] = scale
