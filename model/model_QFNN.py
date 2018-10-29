@@ -5,7 +5,7 @@ By Kostas Hatalis
 import numpy as np
 from keras import backend as K
 from keras.optimizers import SGD
-from keras.layers import Dense, Input
+from keras.layers import Dense, Input, Dropout
 from keras.layers.merge import Concatenate
 from keras import regularizers
 from keras.engine.training import Model
@@ -18,7 +18,7 @@ K.set_floatx('float32')
 
 def model_QFNN(experiment):
     """
-    Initialize weights for the compiled model.
+
 
     Arguments:
         experiment (dict) - various QFNN parameters

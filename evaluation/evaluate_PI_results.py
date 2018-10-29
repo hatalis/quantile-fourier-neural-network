@@ -12,9 +12,10 @@ def evaluate_PI_results(experiment):
     n_tau = experiment['N_tau']
     tau = experiment['tau']
 
-    q_train = experiment['q_train']
+    # q_train = experiment['q_train']
+    # q_all = experiment['q_all']
     q_test = experiment['q_test']
-    q_all = experiment['q_all']
+
 
     # calculate evaluation scores
     QS = quantileScore(q_test, tau, n_tau, n_test, y_test)
