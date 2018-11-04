@@ -10,6 +10,7 @@ def output_PI_results(experiment):
 
     SHARP = experiment['SHARP']
     QS = experiment['QS']
+    QS_train = experiment['QS_train']
     IS = experiment['IS']
     ACE = experiment['ACE']
     PICP = experiment['PICP']
@@ -17,7 +18,7 @@ def output_PI_results(experiment):
     plot_results = experiment['plot_results']
     print_cost = experiment['print_cost']
     costs = experiment['costs']
-    # q_train = experiment['q_train']
+    q_train = experiment['q_train']
     q_test = experiment['q_test']
     q_all = experiment['q_all']
     N_tau = experiment['N_tau']
@@ -41,8 +42,9 @@ def output_PI_results(experiment):
     print('PICP = ',PICP)
     print('Sharpness = ',SHARP)
     print('ACE = ', ACE)
-    print('QS = ',QS)
     print('IS = ',IS)
+    print('QS = ', QS)
+    print('QS_train = ', QS_train)
 
     # PIs = np.arange(0.1,1,0.1)
     # plt.figure()
@@ -68,7 +70,7 @@ def output_PI_results(experiment):
         plt.figure()
         plt.plot(np.squeeze(costs))
         plt.ylabel('loss')
-        plt.xlabel('epcoh')
+        plt.xlabel('epoch')
 
     if plot_results:
         if N_PI > 0:
