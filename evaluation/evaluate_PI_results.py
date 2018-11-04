@@ -8,11 +8,13 @@ import numpy as np
 def evaluate_PI_results(experiment):
     # load in quantile estimates and evaluation parameters
     n_test = experiment['N_test']
+    N_train = experiment['N_train']
+    y_train = experiment['y_train']
     y_test = experiment['y_test']
     n_tau = experiment['N_tau']
     tau = experiment['tau']
 
-    # q_train = experiment['q_train']
+    q_train = experiment['q_train']
     # q_all = experiment['q_all']
     q_test = experiment['q_test']
 
@@ -21,6 +23,10 @@ def evaluate_PI_results(experiment):
     QS = quantileScore(q_test, tau, n_tau, n_test, y_test)
     [IS, SHARP, PINC] = intervalScore(q_test, tau, n_tau, n_test, y_test)
     ACE,PICP = coverageScore(q_test, tau, n_tau, n_test, y_test)
+
+
+    QS_train = quantileScore(q_train, tau, n_tau, N_train, y_train)
+    experiment['QS_train'] = QS_train
 
     # save scores to dictionary and return
     experiment['QS'] = QS
