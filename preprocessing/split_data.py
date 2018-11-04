@@ -24,10 +24,13 @@ def split_data(experiment):
     y_train, y_test = raw_data[0:split_point].values, raw_data[split_point:].values
 
     # scale y to [0,max_value] if needed
-    maxy, scale = np.max(y_train), 1
-    if maxy > max_value:
-        scale = (1/max_value)*maxy
-        y_train = y_train / scale
+    if max_value != 0:
+        maxy, scale = np.max(y_train), 1
+        if maxy > max_value:
+            scale = (1/max_value)*maxy
+            y_train = y_train / scale
+    else:
+        scale = 1
 
     # apply log if needed
     if apply_log:
