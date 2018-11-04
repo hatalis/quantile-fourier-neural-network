@@ -4,8 +4,9 @@ By Kostas Hatalis
 
 import numpy as np
 from keras import backend as K
-from keras.optimizers import SGD
-from keras.layers import Dense, Input, Dropout
+from keras.optimizers import SGD, Adam
+from keras.callbacks import EarlyStopping
+from keras.layers import Dense, Input, Dropout, BatchNormalization
 from keras.layers.merge import Concatenate
 from keras import regularizers
 from keras.engine.training import Model
@@ -51,6 +52,8 @@ def model_QFNN(experiment):
     # one dimensional input data
     input_data = Input(shape=(1,))
     cosine = Dense(hidden_dims, activation=cos)(input_data) # cosine nodes
+    cosine = Dropout(0.1)(cosine)
+
     linear = Dense(g_dims, activation='linear')(input_data) # g(t) nodes
 
     # concatenate layers into one
@@ -59,16 +62,22 @@ def model_QFNN(experiment):
     # output layer with added L1 regularizer
     output_layer = Dense(N_tau, kernel_regularizer=regularizers.l1(Lambda))(input_layer)
 
+
     # compile keras model
-    sgd = SGD(lr=eta, decay=0, momentum=0.00, nesterov=False)
+    sgd = SGD(lr=eta, decay=0.0, momentum=0.0, nesterov=False)
     model = Model(inputs=[input_data], outputs=[output_layer])
+
     model.compile(loss=lambda Y, Q: pinball_loss(tau, Y, Q, alpha, smooth_loss), optimizer=sgd)
 
     # initialize weights
     model = initialize_weights(model, hidden_dims, g_dims, N_tau)
 
+    # Define early stopping monitor
+    # early_stopping_monitor = EarlyStopping(patience=2)
+
     # train model
     history = model.fit(X_train, y_train, epochs=epochs, verbose=0, batch_size=batch_size)
+                        # callbacks=[early_stopping_monitor])
 
     # --------------------------------------
 
