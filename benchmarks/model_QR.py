@@ -49,16 +49,16 @@ def model_QR(experiment,method=0,poly=1):
     model = Sequential()
     if method == 0: # QR or PQR
         model.add(Dense(N_tau, input_dim=poly, kernel_initializer='uniform'))
-    elif method == 1: # QR
+    elif method == 1: # QRNN
         hidden_dims = int(N_train * 1)
-        model.add(Dense(hidden_dims, input_dim=poly, kernel_regularizer=regularizers.l1(Lambda),
+        model.add(Dense(hidden_dims, input_dim=poly, kernel_regularizer=regularizers.l2(0.001),
                         kernel_initializer='uniform', activation='relu'))
         model.add(Dense(N_tau, kernel_initializer='uniform'))
 
     # -------------------------------------- compile and fit model
-    sgd = SGD(lr=eta, decay=0, momentum=0.00, nesterov=False)
+    sgd = SGD(lr=0.1, decay=0, momentum=0.00, nesterov=False)
     model.compile(loss=lambda Y, Q: pinball_loss(tau,Y,Q,alpha), optimizer=sgd)
-    history = model.fit(X_train, y_train, epochs=epochs, verbose=0, batch_size=N_train)
+    history = model.fit(X_train, y_train, epochs=10_000, verbose=0, batch_size=N_train)
 
     # -------------------------------------- estimate quantiles of testing data
 

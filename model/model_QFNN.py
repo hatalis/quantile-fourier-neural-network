@@ -3,6 +3,11 @@ By Kostas Hatalis
 '''
 
 import numpy as np
+np.random.seed(0)
+
+from tensorflow import set_random_seed
+set_random_seed(0)
+
 from keras import backend as K
 from keras.optimizers import SGD, Adam
 from keras.callbacks import EarlyStopping
@@ -38,22 +43,20 @@ def model_QFNN(experiment):
     Lambda = experiment['Lambda']
     eta = experiment['eta']
     epochs = experiment['epochs']
-    batch_size = experiment['batch_size']
     N_train = experiment['N_train']
     g_dims = experiment['g_dims']
+    dr = experiment['dropout']
 
     # set batch size and hidden dim to size of train data
     hidden_dims = int(N_train*1)
-    if batch_size == 0:
-        batch_size = N_train
+    batch_size = N_train
 
     # -------------------------------------- build the model
 
     # one dimensional input data
     input_data = Input(shape=(1,))
     cosine = Dense(hidden_dims, activation=cos)(input_data) # cosine nodes
-    cosine = Dropout(0.1)(cosine)
-
+    cosine = Dropout(dr)(cosine)
     linear = Dense(g_dims, activation='linear')(input_data) # g(t) nodes
 
     # concatenate layers into one
@@ -62,11 +65,9 @@ def model_QFNN(experiment):
     # output layer with added L1 regularizer
     output_layer = Dense(N_tau, kernel_regularizer=regularizers.l1(Lambda))(input_layer)
 
-
     # compile keras model
     sgd = SGD(lr=eta, decay=0.0, momentum=0.0, nesterov=False)
     model = Model(inputs=[input_data], outputs=[output_layer])
-
     model.compile(loss=lambda Y, Q: pinball_loss(tau, Y, Q, alpha, smooth_loss), optimizer=sgd)
 
     # initialize weights
@@ -90,6 +91,9 @@ def model_QFNN(experiment):
     q_train = model.predict(X_train)
     q_test = model.predict(X_test)
     q_all = model.predict(X)
+
+
+
 
     # inverse scaled data
     if apply_log:

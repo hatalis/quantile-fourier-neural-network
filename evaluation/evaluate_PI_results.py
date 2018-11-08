@@ -14,22 +14,21 @@ def evaluate_PI_results(experiment):
     n_tau = experiment['N_tau']
     tau = experiment['tau']
 
+    q_all = experiment['q_all']
     q_train = experiment['q_train']
-    # q_all = experiment['q_all']
     q_test = experiment['q_test']
 
-
+    # y_test = y_test[:-1]
+    # n_test = n_test - 1
     # calculate evaluation scores
-    QS = quantileScore(q_test, tau, n_tau, n_test, y_test)
+    QS_train = quantileScore(q_train, tau, n_tau, N_train, y_train)
+    QS_test = quantileScore(q_test, tau, n_tau, n_test, y_test)
     [IS, SHARP, PINC] = intervalScore(q_test, tau, n_tau, n_test, y_test)
     ACE,PICP = coverageScore(q_test, tau, n_tau, n_test, y_test)
 
-
-    QS_train = quantileScore(q_train, tau, n_tau, N_train, y_train)
-    experiment['QS_train'] = QS_train
-
     # save scores to dictionary and return
-    experiment['QS'] = QS
+    experiment['QS_train'] = QS_train
+    experiment['QS'] = QS_test
     experiment['IS'] = IS
     experiment['PINC'] = PINC
     experiment['ACE'] = ACE
@@ -78,9 +77,9 @@ def coverageScore(q_hat, tau, n_tau, n_test, y_test):
         ACE[m] = abs(PICP[m] - PINC[m]) * 100
 
     # average q-scores from all PIs into a single score
-    ACE = np.mean(ACE)
 
-    PICP = np.mean(PICP)
+    # ACE = np.mean(ACE)
+    # PICP = np.mean(PICP)
 
     return ACE,PICP
 
@@ -122,28 +121,32 @@ def intervalScore(q_hat, tau, n_tau, n_test, y_test):
         interval_score[m] = np.mean(IS)
 
     # average q-scores from all PIs into a single score
-    interval_score = np.mean(interval_score)
-    sharp_score = np.mean(sharp_score)
+    # interval_score = np.mean(interval_score)
+    # sharp_score = np.mean(sharp_score)
 
     return interval_score, sharp_score, PINC
 
 
 # ------------------------------------------------------------------------------
 
-def quantileScore(q_hat, tau, n_tau, n_test, y_test):
+def quantileScore(q_hat, tau, n_tau, N, y):
+
     qscore = np.zeros((n_tau, 1))
-
     # pinball function
-    for m in range(0, n_tau):
-        xq = np.zeros((n_test, 1))
-        for i in range(0, n_test):
-            if y_test[i] < q_hat[i, m]:
-                xq[i] = (1 - tau[m]) * (q_hat[i, m] - y_test[i])
-            else:
-                xq[i] = tau[m] * (y_test[i] - q_hat[i, m])
-        qscore[m] = np.mean(xq)
-
+    # for m in range(0, n_tau):
+    #     xq = np.zeros((N, 1))
+    #     for i in range(0, N):
+    #         if y[i] < q_hat[i, m]:
+    #             xq[i] = (1 - tau[m]) * (q_hat[i, m] - y[i])
+    #         else:
+    #             xq[i] = tau[m] * (y[i] - q_hat[i, m])
+    #     qscore[m] = np.mean(xq)
     # average q-scores from all quantiles into a single score
-    qscore = np.mean(qscore)
+    # qscore = np.mean(qscore)
+
+
+
+    error = (y - q_hat)
+    qscore = np.mean(np.maximum(tau * error, (tau - 1) * error))
 
     return qscore

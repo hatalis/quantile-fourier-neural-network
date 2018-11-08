@@ -23,6 +23,8 @@ def split_data(experiment):
     split_point = int(len(raw_data) * percent_training)
     y_train, y_test = raw_data[0:split_point].values, raw_data[split_point:].values
 
+    # print(max(y_train))
+
     # scale y to [0,max_value] if needed
     if max_value != 0:
         maxy, scale = np.max(y_train), 1

@@ -23,6 +23,7 @@ def output_PI_results(experiment):
     q_all = experiment['q_all']
     N_tau = experiment['N_tau']
 
+    y_train = experiment['y_train']
     y_test = experiment['y_test']
     N_test = experiment['N_test']
     N_train = experiment['N_train']
@@ -39,12 +40,35 @@ def output_PI_results(experiment):
     xlabel = experiment['xlabel']
     ylabel = experiment['ylabel']
 
-    print('PICP = ',PICP)
-    print('Sharpness = ',SHARP)
-    print('ACE = ', ACE)
-    print('IS = ',IS)
-    print('QS = ', QS)
-    print('QS_train = ', QS_train)
+    data_index = experiment['data_index']
+    series = experiment['raw_data']
+
+    ymin = experiment['ymin']
+    ymax = experiment['ymax']
+    labelH = experiment['labelH']
+    # print('Results on Train Set:')
+    # print('QS_train = ', QS_train)
+
+
+    # print('\nResults on Test Set:')
+    # print('PICP = ',PICP)
+    # print('Sharpness = ',SHARP)
+    # print('ACE = ', ACE)
+    # print('IS = ',IS)
+    # print('QS = ', QS)
+    # print('')
+
+    # print(PICP)
+    # print(SHARP)
+    # print(ACE)
+    # print(IS)
+    # print(QS)
+
+    # print(' '.join(str(n) for n in PICP.ravel()))
+    # print(' '.join(str(n) for n in SHARP.ravel()))
+    # print(' '.join(str(n) for n in ACE.ravel()))
+    # print(' '.join(str(n) for n in IS.ravel()))
+    # print(' '.join(str(n) for n in QS.ravel()))
 
     # PIs = np.arange(0.1,1,0.1)
     # plt.figure()
@@ -74,23 +98,39 @@ def output_PI_results(experiment):
 
     if plot_results:
         if N_PI > 0:
-            plt.figure()
+            fig = plt.figure(figsize=(12, 4))
+            ax = fig.add_subplot(1, 1, 1)
+            ax.set_axisbelow(True)
+            ax.axvspan(series.index[0], series.index[split_point], alpha=0.2, color='gray')
             x = range(N)
-            plt.plot(x,y,'r')
+            plt.plot(series,'r',linewidth=1)
             for i in range(N_PI):
                 y1 = q_all[:,i]
                 y2 = q_all[:,-1-i]
-                plt.fill_between(x, y1, y2, color='blue', alpha=2 / N_tau) # alpha=str(1/n_PIs)
+                plt.fill_between(series.index, y1, y2, color='blue', alpha=2 / N_tau) # alpha=str(1/n_PIs)
             plt.ylabel(ylabel)
             plt.xlabel(xlabel)
             # plt.ylim(0,1.5*np.max(np.array(y)))
-            plt.axvline(x=split_point, color='black')
+            plt.axvline(x=series.index[split_point], color='black')
+            plt.grid(linewidth=0.4)
+            plt.autoscale(enable=True, axis='x', tight=True)
+            plt.grid(True)
+
+            miny, maxy = ax.get_ylim()
+            midpoint = int(len(y)*0.2)
+            plt.text(series.index[midpoint],maxy* labelH, 'Training Samples')
+            midpoint = int(len(y) * 0.7)
+            plt.text(series.index[midpoint], maxy * labelH, 'Testing Samples')
+            # plt.ylim(ymin, ymax)
+            fig.savefig("pis.pdf", bbox_inches='tight')
+
         else: # plot median
-            plt.figure()
+            fig =  plt.figure()
             x = range(N)
             plt.plot(x,y,'r')
             plt.plot(x, q_all, 'b')
             # plt.ylim(0,1.5*np.max(np.array(y)))
             plt.axvline(x=split_point, color='black')
-
+            # fig.savefig('median.svg', format='svg', dpi=1200)
+            fig.savefig("median.pdf", bbox_inches='tight')
     return None

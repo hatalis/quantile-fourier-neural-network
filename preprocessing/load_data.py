@@ -54,5 +54,6 @@ def load_data(experiment):
     data.index.name = 'time'
 
     experiment['raw_data'] = data
+    experiment['data_index'] = data.index
 
     return experiment
